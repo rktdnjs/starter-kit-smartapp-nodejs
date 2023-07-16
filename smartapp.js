@@ -1,67 +1,55 @@
 const SmartApp = require('@smartthings/smartapp');
-const weather = require('./lib/weather');
 
+async function handleContactSensor(ctx, eventData, eventTime) {
+    console.log('handleContactSensor() is called...');
+}
 
-async function setColor(ctx) {
-    const forecast = await weather.getForecast(ctx.configStringValue('zipCode'));
-    const color = weather.getColorForForecast(forecast, ctx.configNumberValue('forecastInterval'));
-    await ctx.api.devices.sendCommands(ctx.config.colorLight, [
-        {
-            capability: 'switch',
-            command: 'on'
-        },
-        {
-            capability: 'switchLevel',
-            command: 'setLevel',
-            arguments: [20]
-        },
-        {
-            capability: 'colorControl',
-            command: 'setColor',
-            arguments: [color]
-        }
-    ]);
+async function handleMotionSensor(ctx, eventData, eventTime) {
+    console.log('handleMotionSensor() is called...');
+}
+
+async function handleButton(ctx, eventData, eventTime) {
+    console.log('handleButton() is called...');
 }
 
 module.exports = new SmartApp()
     .configureI18n()
     .enableEventLogging(2) // logs all lifecycle event requests/responses as pretty-printed JSON. Omit in production
     .page('mainPage', (context, page, configData) => {
-        page.section('forecast', section => {
-            section.numberSetting('zipCode')
+        page.section('Starter kit', section => {
+            // https://www.samsung.com/sec/smartthings/HOMEKITA/HOMEKITA/
+
+            // (1) https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference#contactSensor
+            section.deviceSetting('Contact sensor')
+                .capabilities(['contactSensor'])
+                .permissions('r')
                 .required(true);
-            section.enumSetting('forecastInterval')
-                .options([
-                    { id: "3", name: "3 Hours" },
-                    { id: "6", name: "6 Hours" },
-                    { id: "9", name: "9 Hours" },
-                    { id: "12", name: "12 Hours" }
-                ])
-                .defaultValue("3");
-            section.enumSetting('scheduleInterval')
-                .options([
-                    { id: "15", name: "15 Minutes" },
-                    { id: "30", name: "30 Minutes" },
-                    { id: "45", name: "45 Minutes" },
-                    { id: "60", name: "60 Minutes" }
-                ])
-                .defaultValue("15");
-        });
-        page.section('lights', section => {
-            section.deviceSetting('colorLight')
-                .capabilities(['colorControl', 'switch', 'switchLevel'])
-                .permissions('rx')
-                .required(true);
+
+            // (2) https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference#motionSensor
+            section.deviceSetting('Motion sensor')
+                .capabilities(['motionSensor'])
+                .permissions('r')
+                .required(true);     
+                
+            // (3) https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference#button
+            section.deviceSetting('Smart button')
+                .capabilities(['button'])
+                .permissions('r')
+                .required(true);                
         });
     })
-    .updated(async ctx => {
-        // clear any previous configuration
-        await ctx.api.schedules.delete();
-
-        // switch light on to initial color
-        await setColor(ctx);
-
-        // schedule future changes
-        await ctx.api.schedules.schedule('weatherHandler', `0/${ctx.configStringValue('scheduleInterval')} * * * ? *`, 'UTC');
+    .updated(async (context, updateData) => {
+        await context.api.subscriptions.delete();
+        await context.api.subscriptions.subscribeToDevices
+            (context.config.contactSensor,
+                'contactSensor', 'contact', 'contactSensorHandler');
+        await context.api.subscriptions.subscribeToDevices
+            (context.config.contactSensor,
+                'motionSensor', 'motion', 'motionSensorHandler');
+        await context.api.subscriptions.subscribeToDevices
+            (context.config.contactSensor,
+                'button', 'button', 'buttonHandler');        
     })
-    .scheduledEventHandler('weatherHandler', setColor);
+    .subscribedEventHandler('contactSensorHandler', handleContactSensor)
+    .subscribedEventHandler('motionSensorHandler', handleMotionSensor)
+    .subscribedEventHandler('buttonHandler', handleButton);

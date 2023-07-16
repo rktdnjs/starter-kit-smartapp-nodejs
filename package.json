@@ -1,8 +1,8 @@
 {
-  "name": "weather-color-light-smartapp",
+  "name": "starter-kit-smartapp",
   "version": "1.0.0",
-  "description": "Set the color of a light based on the weather",
-  "repository": "https://github.com/SmartThingsCommunity/weather-color-light-smartapp-nodejs",
+  "description": "Reaing a contact sensor, a motion sensor, and a button",
+  "repository": "https://github.com/kwanghoon/starter-kit-smartapp-nodejs",
   "main": "server.js",
   "ava": {
     "files": [
