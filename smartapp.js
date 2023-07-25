@@ -20,19 +20,19 @@ module.exports = new SmartApp()
             // https://www.samsung.com/sec/smartthings/HOMEKITA/HOMEKITA/
 
             // (1) https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference#contactSensor
-            section.deviceSetting('Contact sensor')
+            section.deviceSetting('contactSensor')
                 .capabilities(['contactSensor'])
                 .permissions('r')
                 .required(true);
 
             // (2) https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference#motionSensor
-            section.deviceSetting('Motion sensor')
+            section.deviceSetting('motionSensor')
                 .capabilities(['motionSensor'])
                 .permissions('r')
                 .required(true);     
                 
             // (3) https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference#button
-            section.deviceSetting('Smart button')
+            section.deviceSetting('smartButton')
                 .capabilities(['button'])
                 .permissions('r')
                 .required(true);                
