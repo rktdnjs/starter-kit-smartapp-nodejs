@@ -13,8 +13,6 @@ It showcases:
 
 ### Prerequisites
 
-- An [AWS](https://www.serverless.com/framework/docs/providers/aws/guide/credentials/) account (free tier is fine).
-- An [OpenWeather](https://api.openweathermap.org) account (free tier is fine).
 - A [Samsung account](https://account.samsung.com/membership/index.do) and the SmartThings mobile application.
 - A [Developer Workspace](https://smartthings.developer.samsung.com/workspace/) account.
 - A SmartThings compatible color bulb, such as SYLVANIA Smart RGBW, LIFX, or Phillips Hue.
