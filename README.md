@@ -5,7 +5,6 @@ This example SmartApp demonstrates the use of SmartThings APIs via the [SmartApp
 It showcases:
 
 - App installation and configuration flow.
-- Actuating devices using the SmartThings API.
 - Creating schedules and handling scheduled executions.
 
 ## Setup instructions
