@@ -1,11 +1,10 @@
 # A SmartApp for the Samsung SmartThings Starter Kit.
 
-This example Lambda SmartApp demonstrates the use of SmartThings APIs via the [SmartApp NodeJS SDK](https://github.com/SmartThingsCommunity/smartapp-sdk-nodejs) to achieve an Automation.
+This example SmartApp demonstrates the use of SmartThings APIs via the [SmartApp NodeJS SDK](https://github.com/SmartThingsCommunity/smartapp-sdk-nodejs) to achieve an Automation.
 
 It showcases:
 
 - App installation and configuration flow.
-- Integrating with a third-party API (OpenWeather).
 - Actuating devices using the SmartThings API.
 - Creating schedules and handling scheduled executions.
 
