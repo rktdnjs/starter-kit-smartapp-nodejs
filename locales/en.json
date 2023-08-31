@@ -1,7 +1,7 @@
 {
-    "pages.mainPage.name": "Starter Kit",
-    "pages.mainPage.sections.Starter kit.name": "Starter Kit devices",
-    "pages.mainPage.settings.contactSensor.name": "Contact sensor",
-    "pages.mainPage.settings.motionSensor.name": "Motion sensor",
-    "pages.mainPage.settings.smartButton.name": "Smart button"
+  "pages.mainPage.name": "Starter Kit",
+  "pages.mainPage.sections.Starter kit.name": "Starter Kit devices",
+  "pages.mainPage.settings.contactSensor.name": "Contact sensor",
+  "pages.mainPage.settings.motionSensor.name": "Motion sensor",
+  "pages.mainPage.settings.smartButton.name": "Smart button"
 }
