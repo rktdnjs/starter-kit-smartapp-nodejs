@@ -8,6 +8,22 @@ async function handleButton(ctx, eventData, eventTime) {
   console.log("handleButton() is called...");
 }
 
+async function handleCamera(ctx, eventData, eventTime) {
+  console.log("handleCamera() is called...");
+}
+
+async function handleCameraSwitch(ctx, eventData, eventTime) {
+  console.log("handleCameraSwitch() is called...");
+  if (eventData.value === "on") {
+    ctx.api.devices.sendCommands(
+      ctx.config.camera,
+      "take",
+      "correlationId...",
+      "reason..."
+    );
+  }
+}
+
 module.exports = new SmartApp()
   .configureI18n()
   .enableEventLogging(2) // logs all lifecycle event requests/responses as pretty-printed JSON. Omit in production
@@ -35,6 +51,12 @@ module.exports = new SmartApp()
         .capabilities(["button"])
         .permissions("r")
         .required(false);
+
+      section
+        .deviceSetting("camera")
+        .capabilities(["imageCapture", "switch"])
+        .permissions("rx")
+        .required(false);
     });
   })
   .updated(async (context, updateData) => {
@@ -57,10 +79,25 @@ module.exports = new SmartApp()
       "button",
       "buttonHandler"
     );
+    await context.api.subscriptions.subscribeToDevices(
+      context.config.camera,
+      "imageCapture",
+      "image",
+      "cameraHandler"
+    );
+    await context.api.subscriptions.subscribeToDevices(
+      context.config.camera,
+      "switch",
+      "switch",
+      "cameraSwitchHandler"
+    );
   })
   .subscribedEventHandler("contactSensorHandler", (context, event) => {
+    console.log("handleContactSensor() is called.");
     const value = event.value === "open" ? "on" : "off";
     context.api.devices.sendCommands(context.config.camera, "switch", value);
   })
   .subscribedEventHandler("motionSensorHandler", handleMotionSensor)
-  .subscribedEventHandler("buttonHandler", handleButton);
+  .subscribedEventHandler("buttonHandler", handleButton)
+  .subscribedEventHandler("cameraHandler", handleCamera)
+  .subscribedEventHandler("cameraSwitchHandler", handleCameraSwitch);
