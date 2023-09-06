@@ -1,26 +1,36 @@
 const SmartApp = require("@smartthings/smartapp");
 
-async function handleMotionSensor(ctx, eventData, eventTime) {
-  console.log("handleMotionSensor() is called...");
+async function handleContactSensor(context, eventData, eventTime) {
+  console.log("handleContactSensor() is called.");
+  if (eventData.value === "open") {
+    context.api.devices.sendCommands(context.config.camera, "switch", "on");
+  } else {
+    context.api.devices.sendCommands(context.config.camera, "switch", "off");
+  }
 }
 
-async function handleButton(ctx, eventData, eventTime) {
+async function handleMotionSensor(context, eventData, eventTime) {
+  console.log("handleMotionSensor() is called.");
+}
+
+async function handleButton(context, eventData, eventTime) {
   console.log("handleButton() is called...");
 }
 
-async function handleCamera(ctx, eventData, eventTime) {
-  console.log("handleCamera() is called...");
+async function handleCameraImageCapture(context, eventData, eventTime) {
+  console.log("handleCameraImageCapture() is called...");
 }
 
-async function handleCameraSwitch(ctx, eventData, eventTime) {
+async function handleCameraSwitch(context, eventData, eventTime) {
   console.log("handleCameraSwitch() is called...");
   if (eventData.value === "on") {
-    ctx.api.devices.sendCommands(
-      ctx.config.camera,
-      "take",
-      "correlationId...",
-      "reason..."
-    );
+    context.api.devices.sendCommands(context.config.camera, [
+      {
+        capability: "image",
+        command: "take",
+        arguments: ["1", "2"],
+      },
+    ]);
   }
 }
 
@@ -55,7 +65,7 @@ module.exports = new SmartApp()
       section
         .deviceSetting("camera")
         .capabilities(["imageCapture", "switch"])
-        .permissions("rx")
+        .permissions("rwx")
         .required(false);
     });
   })
@@ -83,7 +93,7 @@ module.exports = new SmartApp()
       context.config.camera,
       "imageCapture",
       "image",
-      "cameraHandler"
+      "cameraImageCaptureHandler"
     );
     await context.api.subscriptions.subscribeToDevices(
       context.config.camera,
@@ -92,12 +102,8 @@ module.exports = new SmartApp()
       "cameraSwitchHandler"
     );
   })
-  .subscribedEventHandler("contactSensorHandler", (context, event) => {
-    console.log("handleContactSensor() is called.");
-    const value = event.value === "open" ? "on" : "off";
-    context.api.devices.sendCommands(context.config.camera, "switch", value);
-  })
+  .subscribedEventHandler("contactSensorHandler", handleContactSensor)
   .subscribedEventHandler("motionSensorHandler", handleMotionSensor)
   .subscribedEventHandler("buttonHandler", handleButton)
-  .subscribedEventHandler("cameraHandler", handleCamera)
+  .subscribedEventHandler("cameraImageCaptureHandler", handleCameraImageCapture)
   .subscribedEventHandler("cameraSwitchHandler", handleCameraSwitch);
