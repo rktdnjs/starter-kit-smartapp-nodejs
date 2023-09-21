@@ -19,10 +19,40 @@ async function handleButton(context, eventData, eventTime) {
 
 async function handleCameraImageCapture(context, eventData, eventTime) {
   console.log("handleCameraImageCapture() is called...");
+  console.log("이미지 URL : ", eventData.value);
+  console.log(typeof(eventData.value));
+
+  if (eventData.value) {
+    const imageURL = eventData.value;
+    fetch(imageURL, {
+      method: 'GET',
+      headers: {
+        "Authorization" : ""
+      },
+    })
+    .then((response) => {
+      console.log(response)
+      return response.blob(); // 이미지 데이터를 Blob으로 변환
+    })
+    .then((imageBlob) => {
+          
+      console.log(imageBlob);
+      const objectURL = URL.createObjectURL(imageBlob);
+      console.log(objectURL);
+      // window.open(objectURL);
+      // const objectURL = URL.createObjectURL(imageBlob);
+    })
+    // .then((response) => console.log(response))
+    // .then((response) => console.log("response", response))
+    // .catch(err => console.log(err));
+  }
 }
 
 async function handleCameraSwitch(context, eventData, eventTime) {
   console.log("handleCameraSwitch() is called...");
+  // SmartThings 카메라가 어떤 행동에 의해 켜지면 imageCapture capability의 take command 사용
+  // 이후에 ImageCapture가 완료되면 handleCameraImageCapture를 통해 이미지 캡쳐 유무 확인가능
+  // 단, 이미지 캡쳐 결과를 확인하기 위해서는 일단 별도로 해당 URL에 토큰을 담아 GET요청을 해야만 함
   if (eventData.value === "on") {
     context.api.devices.sendCommands(context.config.camera, [
       {
