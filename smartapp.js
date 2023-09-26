@@ -18,33 +18,30 @@ async function handleButton(context, eventData, eventTime) {
 }
 
 async function handleCameraImageCapture(context, eventData, eventTime) {
+  // Contact Sensor 작동 - 카메라 스위치 On - 카메라 이미지 캡쳐 작동 이후 imageURL을 얻을 수 있음
   console.log("handleCameraImageCapture() is called...");
   console.log("이미지 URL : ", eventData.value);
-  console.log(typeof(eventData.value));
-
+  
+  // 아래는 받아온 imageURL을 그대로 node.js단에서 처리하여 얻은 데이터들을 확인할 수 있는 코드
   if (eventData.value) {
     const imageURL = eventData.value;
+    
     fetch(imageURL, {
       method: 'GET',
+      // https://account.smartthings.com/tokens 에서 발급받은 PAT토큰을 "Authorizaiton" 파트에 기입
       headers: {
         "Authorization" : ""
       },
     })
     .then((response) => {
       console.log(response)
-      return response.blob(); // 이미지 데이터를 Blob으로 변환
+      return response.blob(); // 이미지 데이터를 Blob으로 변환하는 코드
     })
     .then((imageBlob) => {
-          
       console.log(imageBlob);
       const objectURL = URL.createObjectURL(imageBlob);
-      console.log(objectURL);
-      // window.open(objectURL);
-      // const objectURL = URL.createObjectURL(imageBlob);
+      console.log(objectURL); // Blob 데이터를 URL형태로 변환시킨 데이터를 읽어들이는 코드
     })
-    // .then((response) => console.log(response))
-    // .then((response) => console.log("response", response))
-    // .catch(err => console.log(err));
   }
 }
 
