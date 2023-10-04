@@ -1,6 +1,4 @@
 const SmartApp = require("@smartthings/smartapp");
-const fs = require("fs");
-const path = require("path");
 
 async function handleContactSensor(context, eventData, eventTime) {
   console.log("handleContactSensor() is called.");
