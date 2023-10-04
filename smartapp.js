@@ -19,6 +19,27 @@ async function handleButton(context, eventData, eventTime) {
 
 async function handleCameraImageCapture(context, eventData, eventTime) {
   console.log("handleCameraImageCapture() is called...");
+
+  const imageURL = eventData.value;
+  const myToken = "c05de873-f168-47ac-87b2-e25f5af63e35";
+
+  const dirPath = "./";
+
+  const fileNmae = "image.jpg";
+
+  var myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", "Bearer " + myToken);
+
+  fetch(imageURL, {
+    method: "GET",
+    headers: myHeaders,
+  })
+    .then((response) => {
+      console.log(response);
+      console.log(response[Object.getOwnPropertySymbols(response)[1]]);
+    })
+    .catch((err) => console.log(err));
 }
 
 async function handleCameraSwitch(context, eventData, eventTime) {
