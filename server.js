@@ -1,5 +1,5 @@
 const SmartApp = require("@smartthings/smartapp");
-const express = require('express');
+const express = require("express");
 const server = express();
 const cors = require("cors");
 const PORT = process.env.PORT || 3005;
@@ -7,15 +7,17 @@ const PORT = process.env.PORT || 3005;
 server.use(express.json());
 server.use(cors());
 
-server.post('/', (req, res, next) => {
-    smartapp.handleHttpCallback(req, res);
+server.post("/", (req, res, next) => {
+  smartapp.handleHttpCallback(req, res);
 });
 
-server.get('/api/image', (req, res) => {
-    res.json(imageURLS);
-})
+server.get("/api/image", (req, res) => {
+  res.json(imageURLS);
+});
 
-server.listen(PORT, () => console.log(`Server is up and running on port ${PORT}`));
+server.listen(PORT, () =>
+  console.log(`Server is up and running on port ${PORT}`)
+);
 
 const imageURLS = [];
 
@@ -37,10 +39,10 @@ async function handleButton(context, eventData, eventTime) {
 }
 
 async function handleCameraImageCapture(context, eventData, eventTime) {
-  // Contact Sensor 작동 - 카메라 스위치 On - 카메라 이미지 캡쳐 작동 이후 imageURL을 얻을 수 있음
+  // Contact Sensor Running - Camera Switch On - After CameraImage capture, you can get imageURL
   console.log("handleCameraImageCapture() is called...");
-  console.log("이미지 URL : ", eventData.value);
-  
+  console.log("Image URL : ", eventData.value);
+
   // 아래는 받아온 imageURL을 그대로 node.js단에서 처리하여 얻은 데이터들을 확인할 수 있는 코드
   if (eventData.value) {
     const imageURL = eventData.value;
@@ -70,7 +72,7 @@ const smartapp = new SmartApp()
   .configureI18n()
   .enableEventLogging(2) // logs all lifecycle event requests/responses as pretty-printed JSON. Omit in production
   .page("mainPage", (context, page, configData) => {
-    page.section("Starter kit", (section) => {
+    page.section("Starter kit", section => {
       // https://www.samsung.com/sec/smartthings/HOMEKITA/HOMEKITA/
 
       // (1) https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference#contactSensor
