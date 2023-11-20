@@ -43,7 +43,7 @@ async function handleCameraImageCapture(context, eventData, eventTime) {
   console.log("handleCameraImageCapture() is called...");
   console.log("Image URL : ", eventData.value);
 
-  // 아래는 받아온 imageURL을 그대로 node.js단에서 처리하여 얻은 데이터들을 확인할 수 있는 코드
+  // Below is a code that can check the data obtained by processing the received imageURL in node.js as it is
   if (eventData.value) {
     const imageURL = eventData.value;
     imageURLS.push(imageURL);
@@ -53,9 +53,9 @@ async function handleCameraImageCapture(context, eventData, eventTime) {
 
 async function handleCameraSwitch(context, eventData, eventTime) {
   console.log("handleCameraSwitch() is called...");
-  // SmartThings 카메라가 어떤 행동에 의해 켜지면 imageCapture capability의 take command 사용
-  // 이후에 ImageCapture가 완료되면 handleCameraImageCapture를 통해 이미지 캡쳐 유무 확인가능
-  // 단, 이미지 캡쳐 결과를 확인하기 위해서는 일단 별도로 해당 URL에 토큰을 담아 GET요청을 해야만 함
+  // Use take command of imageCapture capability when SmartThings camera is turned on by an action
+  // After the image capture is completed, handleCameraImageCapture can be used to check the presence or absence of image capture
+  // However, in order to check the image capture result, you must separately put the token in the URL and make a GET request
   if (eventData.value === "on") {
     context.api.devices.sendCommands(context.config.camera, [
       {
