@@ -1,12 +1,20 @@
 const SmartApp = require("@smartthings/smartapp");
 const express = require("express");
-const server = express();
 const cors = require("cors");
-const { exec } = require("child_process");
+const server = express();
+
+// exec 함수를 Promise로 변환(비동기 처리를 위해)
 // Node.js의 child_process 모듈을 사용하여 CLI 명령어를 실행
 // SmartThings CLI가 시스템에 설치되어 있고
 // 해당 명령어들을 사용할 수 있는 환경이 구성되어 있어야 함
+const { promisify } = require("util");
+const { exec: execCallback } = require("child_process");
+const exec = promisify(execCallback);
 const PORT = process.env.PORT || 3005;
+
+const imageURLS = [];
+const command = "smartthings devices";
+let deviceInfos = null;
 
 server.use(express.json());
 server.use(cors());
@@ -19,24 +27,68 @@ server.get("/api/image", (req, res) => {
   res.json(imageURLS);
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
   console.log(`Server is up and running on port ${PORT}`);
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
+  try {
+    const { stdout, stderr } = await exec(command);
+    // stderr가 있는 경우에는 에러가 발생한 것이므로 에러를 출력하고 함수를 종료
     if (stderr) {
       console.log(`stderr: ${stderr}`);
+      return;
     }
-    const deviceData = stdout;
-    console.log(`smartApp Devices Info : ${deviceData}`);
-  });
-});
+    if (stdout) {
+      // stdout을 사용해 필요한 작업 수행
+      const deviceData = JSON.parse(stdout); // stdout이 JSON 문자열이라고 가정
 
-const imageURLS = [];
-const command = "smartthings devices";
-const deviceInfo = [];
+      // 객체를 JSON 문자열로 변환하여 출력
+      // console.log(`deviceData: ${JSON.stringify(deviceData, null, 2)}`);
+      // console.log(`Fisrt deviceData: ${JSON.stringify(deviceData[0], null, 2)}`);
+
+      // const deviceInfos = deviceData.map((device) => {
+      //   const { deviceId, name, label, locationId, components } = device;
+      //   return {
+      //     deviceId,
+      //     name,
+      //     label,
+      //     locationId,
+      //     components: components.map((component) => ({
+      //       // id: component.id,
+      //       // label: component.label,
+      //       capabilities: component.capabilities.map((cap) => ({
+      //         id: cap.id,
+      //         // version: cap.version,
+      //       })),
+      //     })),
+      //   };
+      // });
+
+      // deviceData에서 필요한 정보 추출
+      deviceInfos = deviceData.map((device) => {
+        const { deviceId, name, label, locationId, components } = device;
+        // 모든 컴포넌트의 capabilities를 하나의 배열로 결합
+        const capabilities = components.flatMap((component) =>
+          component.capabilities.map((cap) => ({
+            id: cap.id,
+          }))
+        );
+        return {
+          deviceId,
+          name,
+          label,
+          locationId,
+          capabilities, // 이제 capabilities는 직접 device 객체에 포함됩니다.
+        };
+      });
+
+      // 변환된 deviceInfos 객체를 JSON 문자열로 변환하여 출력
+      console.log(`deviceInfos : ${JSON.stringify(deviceInfos, null, 2)}`);
+
+      // 해당 deviceInfos 객체를 다른 서버로 전달하는 코드 작성 필요
+    }
+  } catch (error) {
+    console.log(`exec error : ${error}`);
+  }
+});
 
 async function handleContactSensor(context, eventData, eventTime) {
   console.log("handleContactSensor() is called.");
@@ -53,6 +105,7 @@ async function handleMotionSensor(context, eventData, eventTime) {
 
 async function handleButton(context, eventData, eventTime) {
   console.log("handleButton() is called...");
+  console.log(`deviceInfos : ${JSON.stringify(deviceInfos, null, 2)}`);
 }
 
 async function handleCameraImageCapture(context, eventData, eventTime) {
