@@ -36,32 +36,9 @@ server.listen(PORT, async () => {
       console.log(`stderr: ${stderr}`);
       return;
     }
+    // stdout을 사용해 필요한 작업 수행
     if (stdout) {
-      // stdout을 사용해 필요한 작업 수행
       const deviceData = JSON.parse(stdout); // stdout이 JSON 문자열이라고 가정
-
-      // 객체를 JSON 문자열로 변환하여 출력
-      // console.log(`deviceData: ${JSON.stringify(deviceData, null, 2)}`);
-      // console.log(`Fisrt deviceData: ${JSON.stringify(deviceData[0], null, 2)}`);
-
-      // const deviceInfos = deviceData.map((device) => {
-      //   const { deviceId, name, label, locationId, components } = device;
-      //   return {
-      //     deviceId,
-      //     name,
-      //     label,
-      //     locationId,
-      //     components: components.map((component) => ({
-      //       // id: component.id,
-      //       // label: component.label,
-      //       capabilities: component.capabilities.map((cap) => ({
-      //         id: cap.id,
-      //         // version: cap.version,
-      //       })),
-      //     })),
-      //   };
-      // });
-
       // deviceData에서 필요한 정보 추출
       deviceInfos = deviceData.map((device) => {
         const { deviceId, name, label, locationId, components } = device;
@@ -76,7 +53,7 @@ server.listen(PORT, async () => {
           name,
           label,
           locationId,
-          capabilities, // 이제 capabilities는 직접 device 객체에 포함됩니다.
+          capabilities,
         };
       });
 
