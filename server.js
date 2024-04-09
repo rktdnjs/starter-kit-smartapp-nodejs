@@ -1,23 +1,42 @@
 const SmartApp = require("@smartthings/smartapp");
-const express = require('express');
+const express = require("express");
 const server = express();
 const cors = require("cors");
+const { exec } = require("child_process");
+// Node.js의 child_process 모듈을 사용하여 CLI 명령어를 실행
+// SmartThings CLI가 시스템에 설치되어 있고
+// 해당 명령어들을 사용할 수 있는 환경이 구성되어 있어야 함
 const PORT = process.env.PORT || 3005;
 
 server.use(express.json());
 server.use(cors());
 
-server.post('/', (req, res, next) => {
-    smartapp.handleHttpCallback(req, res);
+server.post("/", (req, res, next) => {
+  smartapp.handleHttpCallback(req, res);
 });
 
-server.get('/api/image', (req, res) => {
-    res.json(imageURLS);
-})
+server.get("/api/image", (req, res) => {
+  res.json(imageURLS);
+});
 
-server.listen(PORT, () => console.log(`Server is up and running on port ${PORT}`));
+server.listen(PORT, () => {
+  console.log(`Server is up and running on port ${PORT}`);
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+    }
+    const deviceData = stdout;
+    console.log(`smartApp Devices Info : ${deviceData}`);
+  });
+});
 
 const imageURLS = [];
+const command = "smartthings devices";
+const deviceInfo = [];
 
 async function handleContactSensor(context, eventData, eventTime) {
   console.log("handleContactSensor() is called.");
@@ -40,7 +59,7 @@ async function handleCameraImageCapture(context, eventData, eventTime) {
   // Contact Sensor 작동 - 카메라 스위치 On - 카메라 이미지 캡쳐 작동 이후 imageURL을 얻을 수 있음
   console.log("handleCameraImageCapture() is called...");
   console.log("이미지 URL : ", eventData.value);
-  
+
   // 아래는 받아온 imageURL을 그대로 node.js단에서 처리하여 얻은 데이터들을 확인할 수 있는 코드
   if (eventData.value) {
     const imageURL = eventData.value;
@@ -74,31 +93,15 @@ const smartapp = new SmartApp()
       // https://www.samsung.com/sec/smartthings/HOMEKITA/HOMEKITA/
 
       // (1) https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference#contactSensor
-      section
-        .deviceSetting("contactSensor")
-        .capabilities(["contactSensor"])
-        .permissions("r")
-        .required(false);
+      section.deviceSetting("contactSensor").capabilities(["contactSensor"]).permissions("r").required(false);
 
       // (2) https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference#motionSensor
-      section
-        .deviceSetting("motionSensor")
-        .capabilities(["motionSensor"])
-        .permissions("r")
-        .required(false);
+      section.deviceSetting("motionSensor").capabilities(["motionSensor"]).permissions("r").required(false);
 
       // (3) https://developer.smartthings.com/docs/devices/capabilities/capabilities-reference#button
-      section
-        .deviceSetting("smartButton")
-        .capabilities(["button"])
-        .permissions("r")
-        .required(false);
+      section.deviceSetting("smartButton").capabilities(["button"]).permissions("r").required(false);
 
-      section
-        .deviceSetting("camera")
-        .capabilities(["imageCapture", "switch"])
-        .permissions("rwx")
-        .required(false);
+      section.deviceSetting("camera").capabilities(["imageCapture", "switch"]).permissions("rwx").required(false);
     });
   })
   .updated(async (context, updateData) => {
@@ -115,12 +118,7 @@ const smartapp = new SmartApp()
       "motion",
       "motionSensorHandler"
     );
-    await context.api.subscriptions.subscribeToDevices(
-      context.config.smartButton,
-      "button",
-      "button",
-      "buttonHandler"
-    );
+    await context.api.subscriptions.subscribeToDevices(context.config.smartButton, "button", "button", "buttonHandler");
     await context.api.subscriptions.subscribeToDevices(
       context.config.camera,
       "imageCapture",
