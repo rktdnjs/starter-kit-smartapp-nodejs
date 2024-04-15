@@ -43,11 +43,7 @@ server.listen(PORT, async () => {
       deviceInfos = deviceData.map((device) => {
         const { deviceId, name, label, locationId, components } = device;
         // 모든 컴포넌트의 capabilities를 하나의 배열로 결합
-        const capabilities = components.flatMap((component) =>
-          component.capabilities.map((cap) => ({
-            id: cap.id,
-          }))
-        );
+        const capabilities = components.flatMap((component) => component.capabilities.map((cap) => cap.id));
         return {
           deviceId,
           name,
