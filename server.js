@@ -54,7 +54,7 @@ server.listen(PORT, async () => {
       });
 
       // 변환된 deviceInfos 객체를 JSON 문자열로 변환하여 출력
-      console.log(`deviceInfos : ${JSON.stringify(deviceInfos, null, 2)}`);
+      // console.log(`deviceInfos : ${JSON.stringify(deviceInfos, null, 2)}`);
 
       // 해당 deviceInfos 객체를 다른 서버로 전달하는 코드 작성 필요
     }
@@ -77,8 +77,13 @@ async function handleMotionSensor(context, eventData, eventTime) {
 }
 
 async function handleButton(context, eventData, eventTime) {
+  const eventInfo = {
+    context,
+    eventData,
+    eventTime,
+  };
   console.log("handleButton() is called...");
-  console.log(`deviceInfos : ${JSON.stringify(deviceInfos, null, 2)}`);
+  // console.log(eventInfo);
 }
 
 async function handleCameraImageCapture(context, eventData, eventTime) {
